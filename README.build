@@ -1,0 +1,11 @@
+Build instructions
+    cd build
+    cmake ..
+    make
+
+If cpputest is not installed on your development system:
+    git submodule init
+    git submodule update
+    cd build
+    cmake -DCOMPILE_UT_HARNESS=on ..
+    make
