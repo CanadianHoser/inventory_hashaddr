@@ -1,0 +1,22 @@
+Problem: You are designing an inventory retrieval system for managing a very large number of 
+physical assets. Each asset has an associated tag with an IPv6 address (128 bits) consisting 
+of a 64-bit prefix for the LAN where the asset is physically located and a 64-bit value computed 
+from an exclusive-OR operation on the MD5 hash of the stock-keeping unit (SKU) string as follows:
+
+		hash = md5hash(SKU)
+		address = P ⊕ hi64bits(hash) ⊕ lo64bits(hash)
+
+(Here, P is the 64-bit prefix MSB aligned to 128 bits, the function hi64bits returns the 64 
+most-significant bits, and the function lo64bits returns the 64 least-significant bits. The 
+functions hi64bits and lo64bits return LSB aligned values zero-padded to 128 bits.)
+
+Task 1: Write a test program (C only) that outputs the IPv6 address for the tag given a SKU and 
+subnet prefix. Your program should include an implementation of the md5hash() function and only 
+include headers in the C Standard Library. The code should be endian agnostic, and include 
+unit test. For compilation cmake is preferable, but not a must. Program should be verified for 
+memory leaks and other memory related issues.
+
+Example:
+
+$ ./hashaddr 2001:a:b:c:: ABCDefgh0123
+2001:a:b:c:1a15:5e9d:4fcb:ab98
