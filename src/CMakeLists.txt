@@ -4,6 +4,7 @@
 set(CMAKE_C_STANDARD 17)
 # add_compile_options(-std=c17)
 
+add_compile_options(-Wno-deprecated-declarations)
 set(APP_LIB_SOURCE
     md5sum.c
 )
