@@ -18,6 +18,9 @@ if (COMPILE_UT_HARNESS)
   add_subdirectory(cpputest)
 endif(COMPILE_UT_HARNESS)
 
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 option(COMPILE_TESTS "Compile the tests" ON)
 if (COMPILE_TESTS)
   add_subdirectory(UnitTest)

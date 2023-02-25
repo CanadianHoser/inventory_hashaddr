@@ -12,6 +12,7 @@ else()
     message(STATUS "Found CppUTest version ${CPPUTEST_VERSION}")
 endif()
 
+find_package(OpenSSL REQUIRED)
 add_compile_options(-Wall -Werror)
 
 # (2) Our unit tests sources
@@ -31,7 +32,7 @@ set_target_properties(${TEST_APP_NAME} PROPERTIES
     CXX_EXTENSIONS OFF
 )
 set_target_properties(${TEST_APP_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${TEST_APP_NAME} ${APP_LIB_NAME} ${CPPUTEST_LDFLAGS})
+target_link_libraries(${TEST_APP_NAME} ${APP_LIB_NAME} OpenSSL::SSL ${CPPUTEST_LDFLAGS})
 
 # (5) Run the test once the build is done
 add_custom_command(TARGET ${TEST_APP_NAME} COMMAND ./${TEST_APP_NAME} POST_BUILD)
