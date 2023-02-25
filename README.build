@@ -1,3 +1,6 @@
+Installed library dependencies:
+libssl: "sudo apt-get install libssl-dev"
+
 Build instructions
     cd build
     cmake ..
@@ -9,3 +12,5 @@ If cpputest is not installed on your development system:
     cd build
     cmake -DCOMPILE_UT_HARNESS=on ..
     make
+
+
