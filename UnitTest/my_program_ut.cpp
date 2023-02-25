@@ -9,8 +9,8 @@
 #include "CppUTest/TestHarness.h"
 extern "C" {
 #include "md5sum.h"
-extern void test_md5(void);
-extern void test_new_md5(char const *, ssize_t);
+// extern void test_md5(void);
+extern void generate_md5_for_string(char const *, ssize_t);
 }
 
 TEST_GROUP(my_test)
@@ -32,6 +32,5 @@ TEST(my_test, checkTestHarness)
 TEST(my_test, md5_validation)
 {
     char const buf[] = "The quick brown fox jumped over the lazy dog.";
-    test_md5();
-    test_new_md5(buf, sizeof(buf));
+    generate_md5_for_string(buf, sizeof(buf));
 }

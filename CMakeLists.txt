@@ -8,7 +8,7 @@ project(JobySimulation
 )
 
 add_compile_options(-Wall -Werror)
-set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+# set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 set(APP_NAME my_program)
 set(APP_LIB_NAME my_program_lib)
@@ -19,12 +19,12 @@ if (COMPILE_UT_HARNESS)
   add_subdirectory(cpputest)
 endif(COMPILE_UT_HARNESS)
 
-find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
-
 option(COMPILE_TESTS "Compile the tests" ON)
 if (COMPILE_TESTS)
   add_subdirectory(UnitTest)
 endif(COMPILE_TESTS)
+
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 add_subdirectory(src)
