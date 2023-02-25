@@ -1,6 +1,7 @@
 # https://r4nd0m6uy.ch/cmake-and-cpputest.html
 
 # (1) Build a library with my application sources
+add_compile_options(-Wno-deprecated-declarations)
 set(APP_LIB_SOURCE
     md5sum.c
 )

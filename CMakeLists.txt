@@ -8,6 +8,7 @@ project(JobySimulation
 )
 
 add_compile_options(-Wall -Werror)
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 set(APP_NAME my_program)
 set(APP_LIB_NAME my_program_lib)
