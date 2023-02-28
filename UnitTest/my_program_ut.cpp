@@ -16,6 +16,7 @@ TEST_GROUP(my_test)
 {
     void setup() override
     {
+        set_logging(false);
     }
 
     void teardown() override
@@ -57,6 +58,17 @@ TEST(my_test, invalidLanResultsInZeroPrefix)
     char const buf[] = "2001:a:b:c:1:2:3:yada";
     LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, sizeof(buf), &prefix));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[0]));
+    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
+    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
+    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
+}
+
+TEST(my_test, partialNetworkGeneratesPrefix)
+{
+    struct in6_addr prefix;
+    char const buf[] = "2001:a::";
+    (void) get_ipv6_network_prefix(buf, sizeof(buf), &prefix);
+    LONGS_EQUAL(0x2001000a, ntohl(prefix.__u6_addr.__u6_addr32[0]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));

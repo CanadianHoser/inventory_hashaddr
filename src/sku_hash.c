@@ -5,8 +5,15 @@
 #include <openssl/evp.h>
 #include <arpa/inet.h>  // For inet_ntop and inet_pton
 #include <strings.h>
+#include <stdbool.h>
 #include "sku_hash.h"
 
+bool log_errors = true;
+
+void set_logging(bool logging_on) 
+{
+    log_errors = logging_on;
+}
 
 // Generate the hash for the SKU, which is an MD5 of the input 
 // input_buf: source string
@@ -33,7 +40,8 @@ int get_ipv6_network_prefix(const char *input_buf, size_t buf_len, struct in6_ad
     bzero(pPrefix, sizeof(struct in6_addr));
     if ((rc = inet_net_pton(AF_INET6, input_buf, pPrefix, sizeof(struct in6_addr))) < 0)
     {
-        fprintf(stderr, "Check inputs, could not determine network, rc = %d\n", rc);
+        if (log_errors)
+            fprintf(stderr, "Check inputs, could not validate network, rc = %d\n", rc);
         return rc;
     }
     // Clear out the low order address
