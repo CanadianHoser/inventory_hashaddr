@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 17)
 # add_compile_options(-std=c17)
 
 set(APP_LIB_SOURCE
-    sku_hash.c
+    asset_tracker.c
 )
 
 add_library(${APP_LIB_NAME} ${APP_LIB_SOURCE})

@@ -9,7 +9,7 @@
 #include "CppUTest/TestHarness.h"
 #include <arpa/inet.h>
 extern "C" {
-#include "sku_hash.h"
+#include "asset_tracker.h"
 }
 
 TEST_GROUP(my_test)

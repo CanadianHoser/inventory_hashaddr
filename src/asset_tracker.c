@@ -6,7 +6,7 @@
 #include <arpa/inet.h>  // For inet_ntop and inet_pton
 #include <strings.h>
 #include <stdbool.h>
-#include "sku_hash.h"
+#include "asset_tracker.h"
 
 bool log_errors = true;
 
