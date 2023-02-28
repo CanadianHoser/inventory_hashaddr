@@ -4,13 +4,14 @@
 // #include <openssl/md5.h>
 #include <openssl/evp.h>
 #include <arpa/inet.h>  // For inet_ntop and inet_pton
-#include "md5sum.h"
+#include "sku_hash.h"
 
 
+// Generate the hash for the SKU, which is an MD5 of the input 
 // input_buf: source string
 // bytes: source string length, including NULL terminator
 // pResult: resulting container for the md5sum
-void generate_md5_for_string(char const *input_buf, ssize_t bytes, md5sum_t *pResult)
+void generate_hash_for_sku(char const *input_buf, ssize_t bytes, sku_hash_t *pResult)
 {
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
     const EVP_MD *md = EVP_md5();
