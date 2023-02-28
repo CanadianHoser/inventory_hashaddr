@@ -34,7 +34,10 @@ void generate_hash_for_sku(char const *input_buf, ssize_t bytes, sku_hash_t *pRe
     pResult->lower = ntohll(*(uint64_t*)(&md_value[8]));
 }
 
-int get_ipv6_network_prefix(const char *input_buf, size_t buf_len, struct in6_addr *pPrefix)
+// Return the upper 64 bits of a 128 bit ipv6 address
+// input buffer: NULL-terminated string containing ipv6 address
+// pPrefix: resulting structure containing the 64 bit network prefix in the upper 64 bits.
+int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
 {
     int rc = 0;
     bzero(pPrefix, sizeof(struct in6_addr));
@@ -47,5 +50,10 @@ int get_ipv6_network_prefix(const char *input_buf, size_t buf_len, struct in6_ad
     // Clear out the low order address
     pPrefix->__u6_addr.__u6_addr32[2] = 0;
     pPrefix->__u6_addr.__u6_addr32[3] = 0;
+    return 0;
+}
+
+int generate_address_for_sku(const char *network_buf, const char *sku_buf, struct in6_addr *pIpv6_addr)
+{
     return 0;
 }

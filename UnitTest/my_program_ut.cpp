@@ -38,7 +38,7 @@ TEST(my_test, canGetLanPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:4";
-    (void) get_ipv6_network_prefix(buf, sizeof(buf), &prefix);
+    (void) get_ipv6_network_prefix(buf, &prefix);
     LONGS_EQUAL(0x2001000a, ntohl(prefix.__u6_addr.__u6_addr32[0]));
     LONGS_EQUAL(0x000b000c, ntohl(prefix.__u6_addr.__u6_addr32[1]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
@@ -49,14 +49,14 @@ TEST(my_test, invalidLanResultsInNegativeReturn)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
-    LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, sizeof(buf), &prefix));
+    LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, &prefix));
 }
 
 TEST(my_test, invalidLanResultsInZeroPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
-    LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, sizeof(buf), &prefix));
+    LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, &prefix));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[0]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
@@ -67,9 +67,17 @@ TEST(my_test, partialNetworkGeneratesPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a::";
-    (void) get_ipv6_network_prefix(buf, sizeof(buf), &prefix);
+    (void) get_ipv6_network_prefix(buf, &prefix);
     LONGS_EQUAL(0x2001000a, ntohl(prefix.__u6_addr.__u6_addr32[0]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
+}
+
+TEST(my_test, checkLower64bitsEndianness)
+{
+    struct in6_addr prefix;
+    char const buf[] = "2001:a:b:c:1:2:3:4";
+    (void) inet_net_pton(AF_INET6, buf, &prefix, sizeof(struct in6_addr));
+    LONGS_EQUAL(0x0001000200030004, ntohll(*(uint64_t *)&prefix.__u6_addr.__u6_addr32[2]));
 }
