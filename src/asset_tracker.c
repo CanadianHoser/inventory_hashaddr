@@ -4,7 +4,7 @@
 // #include <openssl/md5.h>
 #include <openssl/evp.h>
 #include <arpa/inet.h>  // For inet_ntop and inet_pton
-#include <strings.h>
+#include <string.h>
 #include <stdbool.h>
 #include "asset_tracker.h"
 
@@ -49,8 +49,7 @@ int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
         return rc;
     }
     // Clear out the low order address
-    pPrefix->__u6_addr.__u6_addr32[2] = 0;
-    pPrefix->__u6_addr.__u6_addr32[3] = 0;
+    bzero(&pPrefix->s6_addr[8], sizeof(uint64_t));
     return rc;
 }
 
