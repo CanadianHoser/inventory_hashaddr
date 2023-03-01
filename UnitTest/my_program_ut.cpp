@@ -56,10 +56,10 @@ TEST(asset_tracker, canGetLanPrefix)
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:4";
     (void) get_ipv6_network_prefix(buf, &prefix);
-    LONGS_EQUAL(0x2001000a, ntohl(prefix.__u6_addr.__u6_addr32[0]));
-    LONGS_EQUAL(0x000b000c, ntohl(prefix.__u6_addr.__u6_addr32[1]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
+    LONGS_EQUAL(0x2001000a, ntohl(*(uint32_t *)&prefix.s6_addr[0]));
+    LONGS_EQUAL(0x000b000c, ntohl(*(uint32_t *)&prefix.s6_addr[4]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[8]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[12]));
 }
 
 TEST(asset_tracker, getIpv6PrefixWithBadNetworkReturnsZero)
@@ -82,10 +82,10 @@ TEST(asset_tracker, invalidLanResultsInZeroPrefix)
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
     (void) get_ipv6_network_prefix(buf, &prefix);
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[0]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[0]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[4]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[8]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[12]));
 }
 
 TEST(asset_tracker, partialNetworkGeneratesPrefix)
@@ -93,10 +93,10 @@ TEST(asset_tracker, partialNetworkGeneratesPrefix)
     struct in6_addr prefix;
     char const buf[] = "2001:a::";
     (void) get_ipv6_network_prefix(buf, &prefix);
-    LONGS_EQUAL(0x2001000a, ntohl(prefix.__u6_addr.__u6_addr32[0]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));
-    LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
+    LONGS_EQUAL(0x2001000a, ntohl(*(uint32_t *)&prefix.s6_addr[0]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[4]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[8]));
+    LONGS_EQUAL(0x00000000, ntohl(*(uint32_t *)&prefix.s6_addr[12]));
 }
 
 TEST(asset_tracker, checkLower64bitsEndianness)
@@ -104,7 +104,8 @@ TEST(asset_tracker, checkLower64bitsEndianness)
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:4";
     (void) inet_net_pton(AF_INET6, buf, &prefix, sizeof(struct in6_addr));
-    LONGS_EQUAL(0x0001000200030004, ntohll(*(uint64_t *)&prefix.__u6_addr.__u6_addr32[2]));
+    // LONGS_EQUAL(0x0001000200030004, NTOHLL(*(uint64_t *)&prefix.__u6_addr.__u6_addr32[2]));
+    LONGS_EQUAL(0x0001000200030004, NTOHLL(*(uint64_t *)&prefix.s6_addr[8]));
 }
 
 TEST(asset_tracker, addressFromSkuAndNetworkIsGenerated)
@@ -115,10 +116,10 @@ TEST(asset_tracker, addressFromSkuAndNetworkIsGenerated)
     struct in6_addr addr;
 
     (void) generate_address_for_sku(network, sku, &addr);
-    LONGS_EQUAL(htons(0x1a15), addr.__u6_addr.__u6_addr16[4]);
-    LONGS_EQUAL(htons(0x5e9d), addr.__u6_addr.__u6_addr16[5]);
-    LONGS_EQUAL(htons(0x4fcb), addr.__u6_addr.__u6_addr16[6]);
-    LONGS_EQUAL(htons(0xab98), addr.__u6_addr.__u6_addr16[7]);
+    LONGS_EQUAL(htons(0x1a15), *(uint16_t*)&addr.s6_addr[8]);
+    LONGS_EQUAL(htons(0x5e9d), *(uint16_t*)&addr.s6_addr[10]);
+    LONGS_EQUAL(htons(0x4fcb), *(uint16_t*)&addr.s6_addr[12]);
+    LONGS_EQUAL(htons(0xab98), *(uint16_t*)&addr.s6_addr[14]);
     inet_ntop(AF_INET6, &addr, result, sizeof(result));
     // printf("Resulting ipv6 address: %s\n", result);
     STRCMP_NOCASE_EQUAL("2001:a:b:c:1a15:5e9d:4fcb:ab98", result);

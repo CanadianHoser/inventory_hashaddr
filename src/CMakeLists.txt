@@ -1,8 +1,7 @@
 # https://r4nd0m6uy.ch/cmake-and-cpputest.html
 
 # (1) Build a library with my application sources
-set(CMAKE_C_STANDARD 17)
-# add_compile_options(-std=c17)
+set(CMAKE_C_STANDARD 11)
 
 set(APP_LIB_SOURCE
     asset_tracker.c

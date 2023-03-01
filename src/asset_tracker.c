@@ -30,8 +30,8 @@ void generate_hash_for_sku(char const *input_buf, ssize_t bytes, sku_hash_t *pRe
     EVP_DigestFinal_ex(mdctx, md_value, &md_len);
     EVP_MD_CTX_free(mdctx);
     // Data is in big-endian format, md5 is a 16 byte (128bit) result
-    pResult->upper = ntohll(*(uint64_t*)(&md_value[0]));
-    pResult->lower = ntohll(*(uint64_t*)(&md_value[8]));
+    pResult->upper = NTOHLL(*(uint64_t*)(&md_value[0]));
+    pResult->lower = NTOHLL(*(uint64_t*)(&md_value[8]));
 }
 
 // Return the upper 64 bits of a 128 bit ipv6 address
@@ -58,7 +58,7 @@ int generate_address_for_sku(const char *network_buf, const char *sku_buf, struc
 {
     int rc = 0;
     sku_hash_t hash = {0};
-    uint64_t low_addr = 0;
+    uint64_t low_addr_host = 0, low_addr = 0;
 
     if (!(network_buf && sku_buf && pIpv6_addr)) {
         fprintf(stderr, "%s: NULL check failed\n", __FUNCTION__);
@@ -71,8 +71,8 @@ int generate_address_for_sku(const char *network_buf, const char *sku_buf, struc
 
     generate_hash_for_sku(sku_buf, strnlen(sku_buf, MAX_SKU_STRING_LENGTH)+1, &hash);
     // Hash values are in host order
-    low_addr = hash.upper ^ hash.lower;
-    low_addr = htonll(low_addr);
+    low_addr_host = hash.upper ^ hash.lower;
+    low_addr = HTONLL(low_addr_host);
     memcpy(&pIpv6_addr->__u6_addr.__u6_addr8[8], &low_addr, sizeof(low_addr));
     return 0;
 }
