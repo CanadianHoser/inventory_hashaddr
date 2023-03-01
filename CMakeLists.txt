@@ -9,8 +9,8 @@ project(JobySimulation
 
 add_compile_options(-Wall -Werror)
 
-set(APP_NAME my_program)
-set(APP_LIB_NAME my_program_lib)
+set(APP_NAME hashaddr)
+set(APP_LIB_NAME hashaddr_lib)
 
 option(COMPILE_UT_HARNESS "Compile CppUTest" OFF)
 if (COMPILE_UT_HARNESS)

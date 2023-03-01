@@ -45,7 +45,7 @@ int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
     if ((rc = inet_pton(AF_INET6, input_buf, pPrefix)) != 1)
     {
         if (log_errors)
-            fprintf(stderr, "Check inputs, could not validate network, rc = %d\n", rc);
+            fprintf(stderr, "Check inputs, could not validate network %s, rc = %d\n", input_buf, rc);
         return rc;
     }
     // Clear out the low order address
