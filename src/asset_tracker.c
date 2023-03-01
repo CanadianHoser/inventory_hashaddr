@@ -53,7 +53,26 @@ int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
     return 0;
 }
 
+// TODO: Put these into a structure with more memory safe components
 int generate_address_for_sku(const char *network_buf, const char *sku_buf, struct in6_addr *pIpv6_addr)
 {
+    int rc = 0;
+    sku_hash_t hash = {0};
+    uint64_t low_addr = 0;
+
+    if (!(network_buf && sku_buf && pIpv6_addr)) {
+        fprintf(stderr, "%s: NULL check failed\n", __FUNCTION__);
+        return -1;
+    }
+
+    if ((rc = get_ipv6_network_prefix(network_buf, pIpv6_addr)) < 0) {
+        return rc;
+    }
+
+    generate_hash_for_sku(sku_buf, strnlen(sku_buf, MAX_SKU_STRING_LENGTH)+1, &hash);
+    // Hash values are in host order
+    low_addr = hash.upper ^ hash.lower;
+    low_addr = htonll(low_addr);
+    memcpy(&pIpv6_addr->__u6_addr.__u6_addr8[8], &low_addr, sizeof(low_addr));
     return 0;
 }

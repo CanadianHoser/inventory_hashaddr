@@ -12,7 +12,7 @@ extern "C" {
 #include "asset_tracker.h"
 }
 
-TEST_GROUP(my_test)
+TEST_GROUP(asset_tracker)
 {
     void setup() override
     {
@@ -24,7 +24,7 @@ TEST_GROUP(my_test)
     }
 };
 
-TEST(my_test, md5_validation)
+TEST(asset_tracker, md5_validation)
 {
     sku_hash_t result;
     char const buf[] = "The quick brown fox jumped over the lazy dog.";
@@ -34,7 +34,24 @@ TEST(my_test, md5_validation)
     LONGS_EQUAL(0x73A21E63C3E0E904, result.lower);
 }
 
-TEST(my_test, canGetLanPrefix)
+TEST(asset_tracker, example_validation) 
+{
+    sku_hash_t result;
+    char const buf[] = "ABCDefgh0123";
+    generate_hash_for_sku(buf, sizeof(buf), &result);
+    // Using https://onlinehashtools.com/calculate-md5-hash for comparison
+    uint64_t w1 = 0x44a938a9acb8e7f4ll;
+    uint64_t w2 = 0x5ebc6634e3734c6cll;
+    LONGS_EQUAL(w1, result.upper);
+    LONGS_EQUAL(w2, result.lower);
+}
+
+TEST(asset_tracker, confirmLowOrderIsLowerXoredWithUpper)
+{
+
+}
+
+TEST(asset_tracker, canGetLanPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:4";
@@ -45,14 +62,14 @@ TEST(my_test, canGetLanPrefix)
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
 }
 
-TEST(my_test, invalidLanResultsInNegativeReturn)
+TEST(asset_tracker, invalidLanResultsInNegativeReturn)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
     LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, &prefix));
 }
 
-TEST(my_test, invalidLanResultsInZeroPrefix)
+TEST(asset_tracker, invalidLanResultsInZeroPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
@@ -63,7 +80,7 @@ TEST(my_test, invalidLanResultsInZeroPrefix)
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
 }
 
-TEST(my_test, partialNetworkGeneratesPrefix)
+TEST(asset_tracker, partialNetworkGeneratesPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a::";
@@ -74,10 +91,27 @@ TEST(my_test, partialNetworkGeneratesPrefix)
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
 }
 
-TEST(my_test, checkLower64bitsEndianness)
+TEST(asset_tracker, checkLower64bitsEndianness)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:4";
     (void) inet_net_pton(AF_INET6, buf, &prefix, sizeof(struct in6_addr));
     LONGS_EQUAL(0x0001000200030004, ntohll(*(uint64_t *)&prefix.__u6_addr.__u6_addr32[2]));
+}
+
+TEST(asset_tracker, addressFromSkuAndNetworkIsGenerated)
+{
+    char const network[] = "2001:a:b:c::";
+    char const sku[] = "ABCDefgh0123";
+    char result[80];
+    struct in6_addr addr;
+
+    (void) generate_address_for_sku(network, sku, &addr);
+    LONGS_EQUAL(htons(0x1a15), addr.__u6_addr.__u6_addr16[4]);
+    LONGS_EQUAL(htons(0x5e9d), addr.__u6_addr.__u6_addr16[5]);
+    LONGS_EQUAL(htons(0x4fcb), addr.__u6_addr.__u6_addr16[6]);
+    LONGS_EQUAL(htons(0xab98), addr.__u6_addr.__u6_addr16[7]);
+    inet_ntop(AF_INET6, &addr, result, sizeof(result));
+    // printf("Resulting ipv6 address: %s\n", result);
+    STRCMP_NOCASE_EQUAL("2001:a:b:c:1a15:5e9d:4fcb:ab98", result);
 }

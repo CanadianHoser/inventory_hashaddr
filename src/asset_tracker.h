@@ -9,6 +9,7 @@ typedef struct {
     uint64_t upper;
 } sku_hash_t;
 
+#define MAX_SKU_STRING_LENGTH 128   /* Including NULL terminator */
 extern void set_logging(bool logging_on);
 extern void generate_hash_for_sku(char const *input_buf, ssize_t bytes, sku_hash_t *pResult);
 extern int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix);
