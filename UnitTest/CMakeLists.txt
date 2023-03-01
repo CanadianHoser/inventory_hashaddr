@@ -18,7 +18,7 @@ add_compile_options(-Wall -Werror)
 # (2) Our unit tests sources
 set(TEST_APP_NAME ${APP_NAME}_tests)
 set(TEST_SOURCES
-    my_program_ut.cpp
+    asset_tracker_ut.cpp
     ut_main.cpp
 )
 
