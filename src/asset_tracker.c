@@ -73,6 +73,6 @@ int generate_address_for_sku(const char *network_buf, const char *sku_buf, struc
     // Hash values are in host order
     low_addr_host = hash.upper ^ hash.lower;
     low_addr = HTONLL(low_addr_host);
-    memcpy(&pIpv6_addr->__u6_addr.__u6_addr8[8], &low_addr, sizeof(low_addr));
+    memcpy(&pIpv6_addr->s6_addr[8], &low_addr, sizeof(low_addr));
     return 0;
 }

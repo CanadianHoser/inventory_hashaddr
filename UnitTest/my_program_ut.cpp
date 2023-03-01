@@ -103,8 +103,7 @@ TEST(asset_tracker, checkLower64bitsEndianness)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:4";
-    (void) inet_net_pton(AF_INET6, buf, &prefix, sizeof(struct in6_addr));
-    // LONGS_EQUAL(0x0001000200030004, NTOHLL(*(uint64_t *)&prefix.__u6_addr.__u6_addr32[2]));
+    (void) inet_pton(AF_INET6, buf, &prefix);
     LONGS_EQUAL(0x0001000200030004, NTOHLL(*(uint64_t *)&prefix.s6_addr[8]));
 }
 
