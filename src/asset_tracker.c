@@ -50,10 +50,14 @@ int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
     }
     // Clear out the low order address
     bzero(&pPrefix->s6_addr[8], sizeof(uint64_t));
-    return rc;
+    return SUCCESS;
 }
 
 // TODO: Put these into a structure with more memory safe components
+// network_buf: string containing an ipv6 network, defined in the upper 64 bits
+// sku_buf: string containing the sku/serial number
+// pIpv6_addr: container for the resulting unique ipv6 address
+// Returns: 1 if prefix can be calculated, 0 on translation error
 int generate_address_for_sku(const char *network_buf, const char *sku_buf, struct in6_addr *pIpv6_addr)
 {
     int rc = 0;
@@ -61,11 +65,14 @@ int generate_address_for_sku(const char *network_buf, const char *sku_buf, struc
     uint64_t low_addr_host = 0, low_addr = 0;
 
     if (!(network_buf && sku_buf && pIpv6_addr)) {
-        fprintf(stderr, "%s: NULL check failed\n", __FUNCTION__);
-        return -1;
+        if (log_errors)
+            fprintf(stderr, "%s: NULL check failed\n", __FUNCTION__);
+        return NULL_PTR;
     }
 
-    if ((rc = get_ipv6_network_prefix(network_buf, pIpv6_addr)) < 0) {
+    if ((rc = get_ipv6_network_prefix(network_buf, pIpv6_addr)) != SUCCESS) {
+        if (log_errors)
+            fprintf(stderr, "%s: Could not create network prefix, rc = %d\n", __FUNCTION__, rc);
         return rc;
     }
 
@@ -74,5 +81,5 @@ int generate_address_for_sku(const char *network_buf, const char *sku_buf, struc
     low_addr_host = hash.upper ^ hash.lower;
     low_addr = HTONLL(low_addr_host);
     memcpy(&pIpv6_addr->s6_addr[8], &low_addr, sizeof(low_addr));
-    return 0;
+    return SUCCESS;
 }

@@ -122,3 +122,29 @@ TEST(asset_tracker, addressFromSkuAndNetworkIsGenerated)
     // printf("Resulting ipv6 address: %s\n", result);
     STRCMP_NOCASE_EQUAL("2001:a:b:c:1a15:5e9d:4fcb:ab98", result);
 }
+
+TEST(asset_tracker, addressFromNullSkuIsGenerated)
+{
+    char const network[] = "2001:a:b:c::";
+    char const sku[] = "";
+    struct in6_addr addr;
+
+    LONGS_EQUAL(SUCCESS, generate_address_for_sku(network, sku, &addr));
+}
+
+TEST(asset_tracker, addressFromNullNetworkIsNotGenerated)
+{
+    char const network[] = "";
+    char const sku[] = "ABCDdeadBeef";
+    struct in6_addr addr;
+
+    CHECK_TRUE(SUCCESS != generate_address_for_sku(network, sku, &addr));
+}
+
+TEST(asset_tracker, nullParameterCausesFailure)
+{
+    char const network[] = "2001:a:b:c::";
+    char const sku[] = "ABCDefgh0123";
+
+    LONGS_EQUAL(NULL_PTR, generate_address_for_sku(network, sku, nullptr));
+}
