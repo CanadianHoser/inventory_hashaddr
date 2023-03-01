@@ -62,18 +62,26 @@ TEST(asset_tracker, canGetLanPrefix)
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[3]));
 }
 
-TEST(asset_tracker, invalidLanResultsInNegativeReturn)
+TEST(asset_tracker, getIpv6PrefixWithBadNetworkReturnsZero)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
-    LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, &prefix));
+    LONGS_EQUAL(0, get_ipv6_network_prefix(buf, &prefix));
+}
+
+TEST(asset_tracker, getIpv6PrefixWithGoodNetworkReturnsOne)
+{
+    struct in6_addr prefix;
+    char const buf[] = "2001:a:b:c:1:2:3:4";
+    set_logging(true);
+    LONGS_EQUAL(1, get_ipv6_network_prefix(buf, &prefix));
 }
 
 TEST(asset_tracker, invalidLanResultsInZeroPrefix)
 {
     struct in6_addr prefix;
     char const buf[] = "2001:a:b:c:1:2:3:yada";
-    LONGS_EQUAL(-1, get_ipv6_network_prefix(buf, &prefix));
+    (void) get_ipv6_network_prefix(buf, &prefix);
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[0]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[1]));
     LONGS_EQUAL(0x00000000, ntohl(prefix.__u6_addr.__u6_addr32[2]));

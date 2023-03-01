@@ -37,11 +37,12 @@ void generate_hash_for_sku(char const *input_buf, ssize_t bytes, sku_hash_t *pRe
 // Return the upper 64 bits of a 128 bit ipv6 address
 // input buffer: NULL-terminated string containing ipv6 address
 // pPrefix: resulting structure containing the 64 bit network prefix in the upper 64 bits.
+// Returns: 1 if prefix can be calculated, 0 on translation error
 int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
 {
     int rc = 0;
     bzero(pPrefix, sizeof(struct in6_addr));
-    if ((rc = inet_net_pton(AF_INET6, input_buf, pPrefix, sizeof(struct in6_addr))) < 0)
+    if ((rc = inet_pton(AF_INET6, input_buf, pPrefix)) != 1)
     {
         if (log_errors)
             fprintf(stderr, "Check inputs, could not validate network, rc = %d\n", rc);
@@ -50,7 +51,7 @@ int get_ipv6_network_prefix(const char *input_buf, struct in6_addr *pPrefix)
     // Clear out the low order address
     pPrefix->__u6_addr.__u6_addr32[2] = 0;
     pPrefix->__u6_addr.__u6_addr32[3] = 0;
-    return 0;
+    return rc;
 }
 
 // TODO: Put these into a structure with more memory safe components
